@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_14_232449) do
+ActiveRecord::Schema.define(version: 2020_05_15_044511) do
 
   create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -38,6 +38,10 @@ ActiveRecord::Schema.define(version: 2020_05_14_232449) do
     t.boolean "official"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "clients_id"
+    t.bigint "client_id"
+    t.index ["client_id"], name: "index_scripts_on_client_id"
+    t.index ["clients_id"], name: "index_scripts_on_clients_id"
   end
 
   create_table "skills", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -46,4 +50,6 @@ ActiveRecord::Schema.define(version: 2020_05_14_232449) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "scripts", "clients"
+  add_foreign_key "scripts", "clients", column: "clients_id"
 end
