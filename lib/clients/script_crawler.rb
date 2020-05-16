@@ -1,3 +1,6 @@
+#Struct representing a script category link
+ScriptCategory = Struct.new(:name, :url)
+
 #Base class that provides default functionality for all crawler
 class ScriptCrawler
 
