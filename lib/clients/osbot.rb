@@ -13,8 +13,7 @@ module Clients
     URLS = {
       home: 'https://www.osbot.org/',
       login: 'https://osbot.org/forum/login/',
-      free_scripts: '',
-      paid_scripts: ''
+      scripts: 'https://osbot.org/mvc/sdn2/scripts/'
     }
 
     #Hash with all selectors
@@ -45,9 +44,7 @@ module Clients
 
 
       freeScriptLinkElement = @@browser.find_element(*SELECTORS[:link_free_scripts])
-      paidScriptLinkElement = @@browser.find_element(*SELECTORS[:link_paid_scripts])
       URLS[:free_scripts] = freeScriptLinkElement.attribute('href')
-      URLS[:paid_scripts] = paidScriptLinkElement.attribute('href')
     end
 
     #returns true if currently logged in to site, false otherwise

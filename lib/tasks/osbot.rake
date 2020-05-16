@@ -1,7 +1,7 @@
 namespace :osbot do
 
   desc "TODO"
-  task crawl: :environment do
+  task scripts: :environment do
     #alias properties
     osbot = Clients::OSBot
     SELECTORS = osbot::SELECTORS
@@ -16,30 +16,27 @@ namespace :osbot do
     #set up driver
     browser = Selenium::WebDriver.for :chrome
     osbot.use_browser(browser)
-    byebug
 
     #navigate to home page
     osbot.load_home
 
     # log in if needed
-    if not osbot.is_logged_in
-      osbot.login
-    end
+    osbot.login unless osbot.is_logged_in
 
-    #crawl free scripts
-    browser.get(osbot::URLS[:free_scripts])
+    #crawl scripts
+    browser.get(osbot::URLS[:scripts])
     osbot.wait_for_element(*SELECTORS[:categories])
 
-    categoryUrls = []
+    scriptCategories = []
     categoryElements = browser.find_elements(*SELECTORS[:categories])
     categoryElements.each do |categoryElement|
-      categoryUrls << categoryElement.attribute('href')
+      c = ScriptCategory.new(categoryElement.text, categoryElement.attribute('href'))
+      scriptCategories << c
     end
 
     #process each category
-    categoryUrls.each_with_index do |url, i|
-      categoryName = categoryElements[i].text
-      next if categoryName == "My Collection"
+    scriptCategories.each_with_index do |scriptCategory, i|
+      next if scriptCategory.name == "My Collection"
 
       #find_or_create category/skill records
 
@@ -55,8 +52,11 @@ namespace :osbot do
     end
 
     p "finished"
+  end
 
-    #crawl paid scripts URLS[:paid_scripts]
+  desc "Scrape script details from each script link"
+  task details: :environment do
+    #TODO: implement detail scraping for each script
   end
 
 end
