@@ -40,8 +40,33 @@ rake rswiki:skills
 ```
 __Note: You must run this command BEFORE attempting to run any other crawlers__
 
+
+## Creating a crawler
+
+```
+rails generate task <client_name>
+```
+to generate a new rake task located at: `'./lib/tasks/<client_name>.rb'`
+
+Create a new file for the tasks Client object at: `/lib/clients/<client_name>.rb`
+
+__\<client_name\>.rb :__
+
+```
+class Client < ScriptCrawler
+  
+end
+```
+Extending the ScriptCrawler class provides the following methods and properties for use in your crawler script:
+
+`self.chrome_driver` - Create a new `Selenium::WebDriver` for the chrome browser
+
+`self.use_browser(b)` - assigns the `@@browser` property of the client, allowing you to interact with the provided `Selenium::WebDriver` browser from within your custom client methods without passing it as a script parameter every time. Returns assigned browser
+
+
 ## Crawlers
-BotScript Crawler provides the following rake tasks for data collection:
+
+BotScript Crawler provides the following crawlers that gather script data for individual bot clients:
 
 #### OSBot
 `rake osbot:scripts` - Crawl OSBot site for list of scripts
