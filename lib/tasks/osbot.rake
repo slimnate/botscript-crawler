@@ -7,23 +7,21 @@ namespace :osbot do
     SELECTORS = osbot::SELECTORS
     URLS = osbot::URLS
 
+    #set up driver
+    browser = osbot.use_browser(osbot.chrome_driver)
+
+    #find/create client entry
     client = Client.find_or_create_by(name: Clients::OSBot::SOURCE_NAME) do |c|
       p "new client: #{c.name}"
     end
     client.url = URLS[:home]
     client.save
 
-    #set up driver
-    browser = Selenium::WebDriver.for :chrome
-    osbot.use_browser(browser)
-
-    #navigate to home page
+    #navigate to client home page and log in
     osbot.load_home
-
-    # log in if needed
     osbot.login unless osbot.is_logged_in
 
-    #crawl scripts
+    #go to scripts page
     browser.get(osbot::URLS[:scripts])
     osbot.wait_for_element(*SELECTORS[:categories])
 

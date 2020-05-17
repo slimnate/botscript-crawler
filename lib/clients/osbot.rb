@@ -86,18 +86,6 @@ module Clients
       self.wait_for_element(*SELECTORS[:forum_home])
     end
 
-    #waits for a specified element on the page with optional timout override.
-    #Timeout defaults to 5 seconds
-    def self.wait_for_element(selectorType, selector, timeout=5)
-      wait = Selenium::WebDriver::Wait.new(:timeout => timeout)
-      wait.until {
-          element = @@browser.find_element(selectorType, selector)
-          if selector.include?('button')
-            element if element.enabled?
-          else
-            element if element.displayed?
-          end
-      }
     end
 
   end #end class OSBot
