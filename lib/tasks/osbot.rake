@@ -22,8 +22,7 @@ namespace :osbot do
     osbot.login unless osbot.is_logged_in
 
     #go to scripts page
-    browser.get(osbot::URLS[:scripts])
-    osbot.wait_for_element(*SELECTORS[:categories])
+    osbot.get_and_wait_for(osbot::URLS[:scripts], *SELECTORS[:categories])
 
     scriptCategories = []
     categoryElements = browser.find_elements(*SELECTORS[:categories])

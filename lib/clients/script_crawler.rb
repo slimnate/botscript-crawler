@@ -21,6 +21,24 @@ class ScriptCrawler
     @@browser = b
     return @@browser
   end
+
+  def self.get_and_wait_for(url, selectorType, selector, timeout=DEFAULT_TIMEOUT)
+    @@browser.get(url)
+    self.wait_for_element(selectorType, selector, timeout)
+  end
+
+  #waits for a specified element on the page with optional timout override.
+  #Timeout defaults to 5 seconds
+  def self.wait_for_element(selectorType, selector, timeout=DEFAULT_TIMEOUT)
+    wait = Selenium::WebDriver::Wait.new(:timeout => timeout)
+    wait.until {
+        element = @@browser.find_element(selectorType, selector)
+        if selector.include?('button')
+          element if element.enabled? or element.displayed?
+        else
+          element if element.displayed?
+        end
+    }
   end
 
   def self.load_home

@@ -19,17 +19,14 @@ module Clients
     #Hash with all selectors
     SELECTORS = {
       #main page links
-      link_login: [:xpath, '//ul[@id="jsddm"]/li[6]'],
-      link_free_scripts: [:xpath, '//ul[@id="jsddm"]/li[3]/a'],
-      link_paid_scripts: [:xpath, '//ul[@id="jsddm"]/li[5]/a'],
+      home_menu: [:xpath, '//ul[@id="jsddm"]'],
 
-      forum_home: [:xpath, '//a[@title="Home"]'],
-
-      #login page elements
+      #login
       login_username_field: [:xpath, '//input[@id="auth"]'],
       login_password_field: [:xpath, '//input[@id="password"]'],
       login_remember_me: [:xpath, '//input[@id="remember_me_checkbox"]'],
       login_button: [:xpath, '//button[@id="elSignIn_submit"][last()]'],
+      forum_home: [:xpath, '//a[@title="Home"]'],
 
       #free_scripts
       categories: '//div[@class="categories"]/a',
@@ -39,12 +36,7 @@ module Clients
     #loads the home page and returns once the page has loaded,
     #timing out after 20 seconds if not
     def self.load_home
-      @@browser.get(URLS[:home])
-      self.wait_for_element(*SELECTORS[:link_free_scripts], 20)
-
-
-      freeScriptLinkElement = @@browser.find_element(*SELECTORS[:link_free_scripts])
-      URLS[:free_scripts] = freeScriptLinkElement.attribute('href')
+      @@browser.get_and_wait_for(URLS[:home], *SELECTORS[:home_menu].to, 20)
     end
 
     #returns true if currently logged in to site, false otherwise
