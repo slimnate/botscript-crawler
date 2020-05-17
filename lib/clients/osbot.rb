@@ -65,17 +65,15 @@ module Clients
       rememberMeElement = @@browser.find_element(*SELECTORS[:login_remember_me])
       submitElement = @@browser.find_elements(*SELECTORS[:login_button])
 
-      @@browser.execute_script("window.scrollTo(0, #{usernameElement.location.y})")
+      self.scroll_to(usernameElement)
 
-      #input and submit
-      usernameElement.click
-      usernameElement.send_keys(USERNAME)
-      passwordElement.click
-      passwordElement.send_keys(PASSWORD)
-
+      #input creds and submit
+      self.type(usernameElement, USERNAME)
+      self.type(passwordElement, PASSWORD)
       submitElement[1].click
 
-      self.wait_for_element(*SELECTORS[:forum_home])
+      #wait for login to complete, 10s timeout
+      self.wait_for_element(*SELECTORS[:forum_home], 10)
     end
 
     end

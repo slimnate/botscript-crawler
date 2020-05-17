@@ -41,7 +41,16 @@ class ScriptCrawler
     }
   end
 
-  def self.load_home
-    raise "ScriptCrawler.load_home not implemented"
+  #scrolls page to specified elements location
+  def self.scroll_to(element)
+    @@browser.execute_script("window.scrollTo(0, #{element.location.y})")
   end
+
+  #clicks on `targetElement` and types `text` after waiting for `clickTypeWaitTime` seconds (default 0.05s)
+  def self.type(targetElement, text, clickTypeWaitTime=0.05)
+    targetElement.click
+    sleep clickTypeWaitTime
+    targetElement.send_keys(text)
+  end
+
 end
