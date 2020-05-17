@@ -24,15 +24,13 @@ namespace :osbot do
     #go to scripts page
     osbot.get_and_wait_for(osbot::URLS[:scripts], *SELECTORS[:categories])
 
-    scriptCategories = []
-    categoryElements = browser.find_elements(*SELECTORS[:categories])
-    categoryElements.each do |categoryElement|
-      c = ScriptCategory.new(categoryElement.text, categoryElement.attribute('href'))
-      scriptCategories << c
-    end
+    #get script categories
+    scriptCategories = osbot.script_categories
 
     #process each category
     scriptCategories.each_with_index do |scriptCategory, i|
+
+      #skip "My Collection" - it's empty by default
       next if scriptCategory.name == "My Collection"
 
       #find_or_create category/skill records

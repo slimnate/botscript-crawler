@@ -29,8 +29,8 @@ module Clients
       forum_home: [:xpath, '//a[@title="Home"]'],
 
       #free_scripts
-      categories: '//div[@class="categories"]/a',
-      free_scripts: '//div[@class="basic_script"]'
+      categories: [:xpath, '//div[@class="categories"]/a'],
+      scripts: [:xpath, '//div[@class="basic_script"]'],
     }
 
     #loads the home page and returns once the page has loaded,
@@ -74,6 +74,20 @@ module Clients
 
       #wait for login to complete, 10s timeout
       self.wait_for_element(*SELECTORS[:forum_home], 10)
+    end
+
+    #parse a list of `ScriptCategory` structs from the scripts page
+    def self.script_categories
+      results = []
+      categoryElements = @@browser.find_elements(*SELECTORS[:categories])
+      categoryElements.each do |categoryElement|
+        #add category to results
+        results << ScriptCategory.new(
+          categoryElement.text,
+          categoryElement.attribute('href')
+        )
+      end
+      return results
     end
 
     end
