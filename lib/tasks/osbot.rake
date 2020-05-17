@@ -33,14 +33,27 @@ namespace :osbot do
       #skip "My Collection" - it's empty by default
       next if scriptCategory.name == "My Collection"
 
-      #find_or_create category/skill records
+      #skill/category records
+      skill = nil
+      category = nil
 
-      #get category page
-      browser.get(url)
-      client.wait_for_element(SELECTORS[:free_scripts])
+      #check if the section is for a skill or a category, create relevant records
+      begin
+        skill = Skill.find_by(name: scriptCategory.name)
+        skillCategory = true
+      rescue ActiveRecord::RecordNotFound
+        category = Category.find_or_create_by(name: scriptCategory.name) do
+          p "New category created - #{category.name}"
+        end
+      end
+
+      p "Skill: #{skill.name}" unless skill is nil
+      p "Category: #{category.name}" unless category is nil
 
       scriptElements = browser.find_elements(SELECTORS[:free_scripts])
       scriptElements.each do |scriptElement|
+      #load category page and get parse scripts
+      osbot.get_and_wait_for(url, *SELECTORS[:scripts], 10)
 
       end
 
