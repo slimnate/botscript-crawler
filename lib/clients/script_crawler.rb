@@ -1,10 +1,10 @@
-#Struct representing a script category link
-ScriptCategory = Struct.new(:name, :url)
+#Struct representing a script section link
+ScriptSection = Struct.new(:name, :url)
 
 #Base class that provides default functionality for all script crawlers
 class ScriptCrawler
 
-  self.DEFAULT_WAIT_TIMEOUT = 5
+  DEFAULT_WAIT_TIMEOUT = 5
 
   #create a new `Selenium::WebDriver` for specified browser
   def self.driver_for(browserSymbol)
@@ -22,14 +22,14 @@ class ScriptCrawler
     return @@browser
   end
 
-  def self.get_and_wait_for(url, selectorType, selector, timeout=DEFAULT_TIMEOUT)
+  def self.get_and_wait_for(url, selectorType, selector, timeout=DEFAULT_WAIT_TIMEOUT)
     @@browser.get(url)
     self.wait_for_element(selectorType, selector, timeout)
   end
 
   #waits for a specified element on the page with optional timout override.
   #Timeout defaults to 5 seconds
-  def self.wait_for_element(selectorType, selector, timeout=DEFAULT_TIMEOUT)
+  def self.wait_for_element(selectorType, selector, timeout=DEFAULT_WAIT_TIMEOUT)
     wait = Selenium::WebDriver::Wait.new(:timeout => timeout)
     wait.until {
         element = @@browser.find_element(selectorType, selector)

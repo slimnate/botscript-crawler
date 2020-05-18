@@ -25,13 +25,14 @@ namespace :osbot do
     osbot.get_and_wait_for(osbot::URLS[:scripts], *SELECTORS[:categories])
 
     #get script categories
-    scriptCategories = osbot.script_categories
+    scriptSections = osbot.script_sections
 
     #process each category
-    scriptCategories.each_with_index do |scriptCategory, i|
+    scriptSections.each_with_index do |scriptSection, i|
 
       #skip "My Collection" - it's empty by default
-      next if scriptCategory.name == "My Collection"
+      next if scriptSection.name == "My Collection"
+      p "ScriptSection: #{scriptSection}"
 
       #skill/category records
       skill = nil
@@ -39,16 +40,16 @@ namespace :osbot do
 
       #check if the section is for a skill or a category, create relevant records
       begin
-        skill = Skill.find_by(name: scriptCategory.name)
-        skillCategory = true
+        skill = Skill.find_by!(name: scriptSection.name)
       rescue ActiveRecord::RecordNotFound
-        category = Category.find_or_create_by(name: scriptCategory.name) do
-          p "New category created - #{category.name}"
+        p "no skill found"
+        category = Category.find_or_create_by!(name: scriptSection.name) do |c|
+          p ">New category created - #{c.name}"
         end
       end
 
-      p "Skill: #{skill.name}" unless skill is nil
-      p "Category: #{category.name}" unless category is nil
+      p ">Skill: #{skill.name}" unless skill == nil
+      p ">Category: #{category.name}" unless category == nil
 
       scriptElements = browser.find_elements(SELECTORS[:free_scripts])
       scriptElements.each do |scriptElement|

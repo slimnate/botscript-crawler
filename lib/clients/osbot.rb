@@ -77,12 +77,12 @@ module Clients
     end
 
     #parse a list of `ScriptCategory` structs from the scripts page
-    def self.script_categories
+    def self.script_sections
       results = []
       categoryElements = @@browser.find_elements(*SELECTORS[:categories])
       categoryElements.each do |categoryElement|
         #add category to results
-        results << ScriptCategory.new(
+        results << ScriptSection.new(
           categoryElement.text,
           categoryElement.attribute('href')
         )
