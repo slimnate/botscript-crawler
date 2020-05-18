@@ -1,4 +1,4 @@
 class ScriptSkill < ApplicationRecord
   belongs_to :script
-  belongs_to :category
+  belongs_to :skill
 end

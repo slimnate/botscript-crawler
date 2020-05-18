@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_16_194432) do
+ActiveRecord::Schema.define(version: 2020_05_17_010824) do
 
   create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -28,6 +28,24 @@ ActiveRecord::Schema.define(version: 2020_05_16_194432) do
     t.string "download_url"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "script_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "script_id"
+    t.bigint "category_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["category_id"], name: "index_script_categories_on_category_id"
+    t.index ["script_id"], name: "index_script_categories_on_script_id"
+  end
+
+  create_table "script_skills", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "script_id"
+    t.bigint "skill_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["script_id"], name: "index_script_skills_on_script_id"
+    t.index ["skill_id"], name: "index_script_skills_on_skill_id"
   end
 
   create_table "scripts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -58,5 +76,9 @@ ActiveRecord::Schema.define(version: 2020_05_16_194432) do
     t.boolean "members_only", default: false, null: false
   end
 
+  add_foreign_key "script_categories", "categories"
+  add_foreign_key "script_categories", "scripts"
+  add_foreign_key "script_skills", "scripts"
+  add_foreign_key "script_skills", "skills"
   add_foreign_key "scripts", "clients"
 end
