@@ -1,3 +1,5 @@
+require 'uri'
+
 module Clients
 
   #OSBot crawler client. Provides helper functions for crawler task
@@ -36,7 +38,7 @@ module Clients
     #loads the home page and returns once the page has loaded,
     #timing out after 20 seconds if not
     def self.load_home
-      @@browser.get_and_wait_for(URLS[:home], *SELECTORS[:home_menu].to, 20)
+      self.get_and_wait_for(URLS[:home], *SELECTORS[:home_menu], 20)
     end
 
     #returns true if currently logged in to site, false otherwise
@@ -54,10 +56,7 @@ module Clients
     #logs in to the site and then navigates back to the home page.
     def self.login
       #go to login page
-      @@browser.get(URLS[:login])
-
-      #wait for page load
-      self.wait_for_element(*SELECTORS[:login_button], 15)
+      self.get_and_wait_for(URLS[:login], *SELECTORS[:login_button], 15)
 
       #find elements
       usernameElement = @@browser.find_element(*SELECTORS[:login_username_field])
