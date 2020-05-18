@@ -51,14 +51,34 @@ namespace :osbot do
       p ">Skill: #{skill.name}" unless skill == nil
       p ">Category: #{category.name}" unless category == nil
 
-      scriptElements = browser.find_elements(SELECTORS[:free_scripts])
-      scriptElements.each do |scriptElement|
       #load category page and get parse scripts
-      osbot.get_and_wait_for(url, *SELECTORS[:scripts], 10)
+      osbot.get_and_wait_for(scriptSection.url, *SELECTORS[:scripts], 10)
+      scriptRecords = osbot.scripts
 
-      end
+      scriptRecords.each do |s|
+        #create by url, since title could be truncated
+        script = Script.create_with(client: client).find_or_create_by!(url: s[:url])
 
-    end
+        script.name = s[:name]
+        script.author = s[:author]
+        script.price = s[:price]
+        script.icon_url = s[:iconUrl]
+        script.download_url = s[:addUrl]
+        script.user_count = s[:users]
+        script.official = false #AFAIK OSBot does not provide official scripts
+
+        if skill != nil
+          script.skills << skill unless script.skills.where(id: skill.id).exists?
+        end
+
+        if category != nil
+          script.categories << category unless script.categories.where(id: category.id).exists?
+        end
+
+        script.save
+      end #end scriptRecords.each
+
+    end #end scriptSections.each
 
     p "finished"
   end
