@@ -6,10 +6,24 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <%= yield %>
+    <!-- Global navbar -->
+    <div class="navbar">
+      <ul>
+        <li class="nav-title"><a href="/">BotScript Crawler</a></li>
+        <li><a href="/scripts">All Scripts</a></li>
+        <li><a href="/skills">Skills</a></li>
+        <li><a href="/categories">Categories</a></li>
+      </ul>
+    </div>
+
+    <!-- Page contents -->
+    <div class="container-fluid">
+      <%= yield %>
+    </div>
   </body>
 </html>

@@ -1,0 +1,123 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ */
+
+body {
+  font-size: 14px;
+}
+
+h2 {
+  margin: 20px;
+  padding-top: 20px;
+}
+
+body p {
+  margin: 20px;
+}
+
+
+/* ============================= navbar styles */
+.navbar {
+  padding: 0px !important;
+  margin: 0px;
+  width: 100%;
+  background-color: #444444;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: block;
+}
+
+.navbar ul li {
+  display: inline;
+  float: left;
+}
+
+.navbar ul li a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  background-color: #dddddd;
+  color: #333333;
+}
+
+.navbar ul li.nav-title {
+  background-color: #333333;
+  text-shadow: 2px 2px 3px #333;
+}
+
+.navbar ul li.nav-title a:hover {
+  text-shadow: 2px 2px 4px #333;
+}
+
+
+/* ============================= global table styles */
+tr td {
+  font-size: 14px;
+  vertical-align: center;
+}
+
+.icon {
+  width: 25px;
+  height: 25px;
+}
+
+.row-icon {
+  width: 3%;
+}
+
+.row-id {
+  width: 3%;
+}
+
+.row-scripts {
+  width: 4%;
+}
+
+.data-scripts {
+  text-align: center;
+}
+
+.row-created {
+  width: 7%;
+}
+
+.row-updated {
+  width: 7%;
+}
+
+.timestamp {
+  font-size: 10px;
+}
+
+.client-links a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 3px;
+  color: #151b38;
+  background-color: #92affc;
+  border-radius: 5px;
+}
+
+.client-links a:hover {
+  text-decoration: none;
+}

@@ -1,0 +1,36 @@
+<h2>Clients (<%= @clients.length %>)</h2>
+
+<p>Click on a client name to see all of it's scripts.</p>
+
+<table class="table table-condensed">
+  <thead>
+    <tr>
+      <th class="row-icon"><!-- icon column --></th>
+      <th class="row-id">Id</th>
+      <th class="row-name">Name</th>
+      <th class="row-scripts">Scripts</th>
+      <th class="row-actions">Actions</th>
+      <th class="row-created">Created</th>
+      <th class="row-updated">Updated</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @clients.each do |client| %>
+      <tr>
+        <td><!-- icon --></td>
+        <td><%= client.id %></td>
+        <td><%= link_to client.name, client %></td>
+        <td class="data-scripts"><%= client.scripts.length %></td>
+        <td class="client-links">
+          <%= link_to "Website", client.url %>
+          <%= link_to "Forum", client.forum_url %>
+          <%= link_to "API Docs", client.apidocs_url %>
+          <%= link_to "Download", client.download_url %>
+        </td>
+        <td><%= time_ago_in_words client.created_at %> ago</td>
+        <td><%= time_ago_in_words client.updated_at %> ago</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
