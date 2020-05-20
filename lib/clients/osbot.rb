@@ -49,7 +49,12 @@ module Clients
 
       #only on paid scripts
       script_price_base: [:css, '.basic_script_price'],
-      script_price_renew: [:css, '.basic_script_price2'] #optional
+      script_price_renew: [:css, '.basic_script_price2'], #optional
+
+      #script detail page selectors
+      detail_title: [:css, 'h1.ipsType_pageTitle'],
+      detail_description: [:xpath, '//div[@data-role="commentContent"]'],
+      detail_loaded: [:css, '#ipsLayout_mainArea']
 
     }
 
@@ -212,6 +217,31 @@ module Clients
       #return all results
       return results
     end #end scripts()
+
+    def self.get_details
+      result = {
+        title: '',
+        description: '',
+        descriptionHtml: ''
+      }
+
+      begin
+        titleElement = @@browser.find_element(*SELECTORS[:detail_title])
+        result[:title] = titleElement.text
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        p '> no name found, yikes'
+      end
+
+      begin
+        descriptionElement = @@browser.find_element(*SELECTORS[:detail_description])
+        result[:description] = descriptionElement.text
+        result[:descriptionHtml] = descriptionElement.attribute('outerHTML')
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        p '> no details found, uh-oh'
+      end
+
+      return result
+    end
 
   end #end class OSBot
 

@@ -90,6 +90,42 @@ namespace :osbot do
   desc "Scrape script details from each script link"
   task details: :environment do
     #TODO: implement detail scraping for each script
+    #TODO: add author url scraping
+    #TODO: scrape title and overwrite if the url is different
+    osbot = Clients::OSBot
+    SELECTORS = osbot::SELECTORS
+
+    client = Client.find_by(name: osbot::SOURCE_NAME)
+
+    browser = osbot.use_browser(osbot.chrome_driver)
+
+    scripts = client.scripts
+    scripts.each do |script|
+      p "processing details for script - #{script.name}"
+      next if script.id < 159
+
+      #load script page
+      begin
+        osbot.get_and_wait_for(script.url, *SELECTORS[:detail_loaded], 30)
+      rescue Selenium::WebDriver::NoSuchElementError
+        p "!!!! error loading #{script.url}"
+      end
+
+      #parse details
+      details = osbot.get_details
+
+      #update database entry
+      script.name = details[:title] unless details[:title].length < 1
+      script.description_text = details[:description] unless details[:description].length < 1
+      script.description_html = details[:descriptionHtml] unless details[:descriptionHtml].length < 1
+
+      script.save
+    end
+  end
+
+  desc "testing"
+  task test: :environment do
+    #stub for quick testing of database relations
   end
 
 end
