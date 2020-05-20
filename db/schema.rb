@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_17_010824) do
+ActiveRecord::Schema.define(version: 2020_05_20_014756) do
 
   create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -55,7 +55,7 @@ ActiveRecord::Schema.define(version: 2020_05_17_010824) do
     t.string "url"
     t.string "icon_url"
     t.text "description_text"
-    t.text "description_html"
+    t.text "description_html", size: :medium
     t.string "download_url"
     t.integer "user_count"
     t.integer "download_count"
