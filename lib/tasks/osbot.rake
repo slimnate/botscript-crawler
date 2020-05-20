@@ -1,62 +1,131 @@
 namespace :osbot do
 
   desc "TODO"
-  task crawl: :environment do
+  task scripts: :environment do
     #alias properties
     osbot = Clients::OSBot
     SELECTORS = osbot::SELECTORS
     URLS = osbot::URLS
 
+    #set up driver
+    browser = osbot.use_browser(osbot.chrome_driver)
+
+    #find/create client entry
     client = Client.find_or_create_by(name: Clients::OSBot::SOURCE_NAME) do |c|
       p "new client: #{c.name}"
     end
     client.url = URLS[:home]
+    client.icon_url = URLS[:icon]
+    client.forum_url = URLS[:forum]
+    client.apidocs_url = URLS[:api]
+    client.download_url = URLS[:download]
     client.save
 
-    #set up driver
-    browser = Selenium::WebDriver.for :chrome
-    osbot.use_browser(browser)
-    byebug
-
-    #navigate to home page
+    #navigate to client home page and log in
     osbot.load_home
+    osbot.login unless osbot.is_logged_in
 
-    # log in if needed
-    if not osbot.is_logged_in
-      osbot.login
-    end
+    #go to scripts page
+    osbot.get_and_wait_for(osbot::URLS[:scripts], *SELECTORS[:categories])
 
-    #crawl free scripts
-    browser.get(osbot::URLS[:free_scripts])
-    osbot.wait_for_element(*SELECTORS[:categories])
-
-    categoryUrls = []
-    categoryElements = browser.find_elements(*SELECTORS[:categories])
-    categoryElements.each do |categoryElement|
-      categoryUrls << categoryElement.attribute('href')
-    end
+    #get script categories
+    scriptSections = osbot.script_sections
 
     #process each category
-    categoryUrls.each_with_index do |url, i|
-      categoryName = categoryElements[i].text
-      next if categoryName == "My Collection"
+    scriptSections.each_with_index do |scriptSection, i|
 
-      #find_or_create category/skill records
+      #skip "My Collection" - it's empty by default
+      next if scriptSection.name == "My Collection"
+      p "ScriptSection: #{scriptSection}"
 
-      #get category page
-      browser.get(url)
-      client.wait_for_element(SELECTORS[:free_scripts])
+      #skill/category records
+      skill = nil
+      category = nil
 
-      scriptElements = browser.find_elements(SELECTORS[:free_scripts])
-      scriptElements.each do |scriptElement|
-
+      #check if the section is for a skill or a category, create relevant records
+      begin
+        skill = Skill.find_by!(name: scriptSection.name)
+      rescue ActiveRecord::RecordNotFound
+        p "no skill found"
+        category = Category.find_or_create_by!(name: scriptSection.name) do |c|
+          p ">New category created - #{c.name}"
+        end
       end
 
-    end
+      p ">Skill: #{skill.name}" unless skill == nil
+      p ">Category: #{category.name}" unless category == nil
+
+      #load category page and get parse scripts
+      osbot.get_and_wait_for(scriptSection.url, *SELECTORS[:scripts], 10)
+      scriptRecords = osbot.scripts
+
+      scriptRecords.each do |s|
+        #create by url, since title could be truncated
+        script = Script.create_with(client: client).find_or_create_by!(url: s[:url])
+
+        script.name = s[:name]
+        script.author = s[:author]
+        script.price = s[:price]
+        script.icon_url = s[:iconUrl]
+        script.download_url = s[:addUrl]
+        script.user_count = s[:users]
+        script.official = false #AFAIK OSBot does not provide official scripts
+
+        if skill != nil
+          script.skills << skill unless script.skills.where(id: skill.id).exists?
+        end
+
+        if category != nil
+          script.categories << category unless script.categories.where(id: category.id).exists?
+        end
+
+        script.save
+      end #end scriptRecords.each
+
+    end #end scriptSections.each
 
     p "finished"
+  end
 
-    #crawl paid scripts URLS[:paid_scripts]
+  desc "Scrape script details from each script link"
+  task details: :environment do
+    #TODO: implement detail scraping for each script
+    #TODO: add author url scraping
+    #TODO: scrape title and overwrite if the url is different
+    osbot = Clients::OSBot
+    SELECTORS = osbot::SELECTORS
+
+    client = Client.find_by(name: osbot::SOURCE_NAME)
+
+    browser = osbot.use_browser(osbot.chrome_driver)
+
+    scripts = client.scripts
+    scripts.each do |script|
+      p "processing details for script - #{script.name}"
+      next if script.id < 159
+
+      #load script page
+      begin
+        osbot.get_and_wait_for(script.url, *SELECTORS[:detail_loaded], 30)
+      rescue Selenium::WebDriver::NoSuchElementError
+        p "!!!! error loading #{script.url}"
+      end
+
+      #parse details
+      details = osbot.get_details
+
+      #update database entry
+      script.name = details[:title] unless details[:title].length < 1
+      script.description_text = details[:description] unless details[:description].length < 1
+      script.description_html = details[:descriptionHtml] unless details[:descriptionHtml].length < 1
+
+      script.save
+    end
+  end
+
+  desc "testing"
+  task test: :environment do
+    #stub for quick testing of database relations
   end
 
 end

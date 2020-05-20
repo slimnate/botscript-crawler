@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_15_044511) do
+ActiveRecord::Schema.define(version: 2020_05_20_014756) do
 
   create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
+    t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -21,35 +22,63 @@ ActiveRecord::Schema.define(version: 2020_05_15_044511) do
   create_table "clients", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "url"
+    t.string "icon_url"
     t.string "forum_url"
     t.string "apidocs_url"
+    t.string "download_url"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "script_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "script_id"
+    t.bigint "category_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["category_id"], name: "index_script_categories_on_category_id"
+    t.index ["script_id"], name: "index_script_categories_on_script_id"
+  end
+
+  create_table "script_skills", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "script_id"
+    t.bigint "skill_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["script_id"], name: "index_script_skills_on_script_id"
+    t.index ["skill_id"], name: "index_script_skills_on_skill_id"
   end
 
   create_table "scripts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
-    t.text "description"
-    t.string "url"
-    t.string "price"
     t.string "author"
-    t.integer "users"
-    t.integer "downloads"
+    t.string "price"
+    t.string "url"
+    t.string "icon_url"
+    t.text "description_text"
+    t.text "description_html", size: :medium
+    t.string "download_url"
+    t.integer "user_count"
+    t.integer "download_count"
     t.boolean "official"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "clients_id"
     t.bigint "client_id"
     t.index ["client_id"], name: "index_scripts_on_client_id"
-    t.index ["clients_id"], name: "index_scripts_on_clients_id"
   end
 
   create_table "skills", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
+    t.string "description"
+    t.string "wiki_url"
+    t.string "icon_url"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "members_only", default: false, null: false
   end
 
+  add_foreign_key "script_categories", "categories"
+  add_foreign_key "script_categories", "scripts"
+  add_foreign_key "script_skills", "scripts"
+  add_foreign_key "script_skills", "skills"
   add_foreign_key "scripts", "clients"
-  add_foreign_key "scripts", "clients", column: "clients_id"
 end

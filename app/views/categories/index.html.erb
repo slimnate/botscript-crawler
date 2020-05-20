@@ -1,0 +1,29 @@
+<h2>Categories (<%= @categories.length %>)</h2>
+
+<p>Click a category name to see it's scripts</p>
+
+<table class="table table-condensed">
+  <thead>
+    <tr>
+      <th class="row-id">Id</th>
+      <th class="row-scripts">Scripts</th>
+      <th class="row-name">Category Name</th>
+      <th class="row-description">Description</th>
+      <th class="row-created">Created</th>
+      <th class="row-updated">Updated</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @categories.each do |category| %>
+      <tr>
+        <td><%= category.id %></td>
+        <td class="data-scripts"><%= link_to category.scripts.length, category %></td>
+        <td><%= category.name %></td> <!-- Link name to list of skills with this category -->
+        <td><%= category.description %></td>
+        <td><%= time_ago_in_words category.created_at %> ago</td>
+        <td><%= time_ago_in_words category.updated_at %> ago</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

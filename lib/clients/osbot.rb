@@ -1,3 +1,5 @@
+require 'uri'
+
 module Clients
 
   #OSBot crawler client. Provides helper functions for crawler task
@@ -13,41 +15,53 @@ module Clients
     URLS = {
       home: 'https://www.osbot.org/',
       login: 'https://osbot.org/forum/login/',
-      free_scripts: '',
-      paid_scripts: ''
+      scripts: 'https://osbot.org/mvc/sdn2/scripts/',
+      icon: 'https://osbot.org/images/icon.png',
+      forum: 'https://osbot.org/forum',
+      api: 'https://osbot.org/api',
+      download: 'https://osbot.org/mvc/get',
     }
 
     #Hash with all selectors
     SELECTORS = {
       #main page links
-      link_login: [:xpath, '//ul[@id="jsddm"]/li[6]'],
-      link_free_scripts: [:xpath, '//ul[@id="jsddm"]/li[3]/a'],
-      link_paid_scripts: [:xpath, '//ul[@id="jsddm"]/li[5]/a'],
+      home_menu: [:xpath, '//ul[@id="jsddm"]'],
 
-      forum_home: [:xpath, '//a[@title="Home"]'],
-
-      #login page elements
+      #login
       login_username_field: [:xpath, '//input[@id="auth"]'],
       login_password_field: [:xpath, '//input[@id="password"]'],
       login_remember_me: [:xpath, '//input[@id="remember_me_checkbox"]'],
       login_button: [:xpath, '//button[@id="elSignIn_submit"][last()]'],
+      forum_home: [:xpath, '//a[@title="Home"]'],
 
-      #free_scripts
-      categories: '//div[@class="categories"]/a',
-      free_scripts: '//div[@class="basic_script"]'
+      categories: [:xpath, '//div[@class="categories"]/a'],
+
+      #all scripts
+      scripts: [:css, '.basic_script'],
+      script_title: [:css, '.basic_script_desc'],
+      script_author: [:css, '.basic_script_author'],
+      script_img: [:css, '.basic_script_img'],
+      script_add_button: [:css, 'button:first-of-type'],
+      script_info_button: [:css, '.button.info'],
+
+      #only on free scripts
+      script_users: [:css, '.basic_script_numusers'],
+
+      #only on paid scripts
+      script_price_base: [:css, '.basic_script_price'],
+      script_price_renew: [:css, '.basic_script_price2'], #optional
+
+      #script detail page selectors
+      detail_title: [:css, 'h1.ipsType_pageTitle'],
+      detail_description: [:xpath, '//div[@data-role="commentContent"]'],
+      detail_loaded: [:css, '#ipsLayout_mainArea']
+
     }
 
     #loads the home page and returns once the page has loaded,
     #timing out after 20 seconds if not
     def self.load_home
-      @@browser.get(URLS[:home])
-      self.wait_for_element(*SELECTORS[:link_free_scripts], 20)
-
-
-      freeScriptLinkElement = @@browser.find_element(*SELECTORS[:link_free_scripts])
-      paidScriptLinkElement = @@browser.find_element(*SELECTORS[:link_paid_scripts])
-      URLS[:free_scripts] = freeScriptLinkElement.attribute('href')
-      URLS[:paid_scripts] = paidScriptLinkElement.attribute('href')
+      self.get_and_wait_for(URLS[:home], *SELECTORS[:home_menu], 20)
     end
 
     #returns true if currently logged in to site, false otherwise
@@ -65,10 +79,7 @@ module Clients
     #logs in to the site and then navigates back to the home page.
     def self.login
       #go to login page
-      @@browser.get(URLS[:login])
-
-      #wait for page load
-      self.wait_for_element(*SELECTORS[:login_button], 15)
+      self.get_and_wait_for(URLS[:login], *SELECTORS[:login_button], 15)
 
       #find elements
       usernameElement = @@browser.find_element(*SELECTORS[:login_username_field])
@@ -76,31 +87,160 @@ module Clients
       rememberMeElement = @@browser.find_element(*SELECTORS[:login_remember_me])
       submitElement = @@browser.find_elements(*SELECTORS[:login_button])
 
-      @@browser.execute_script("window.scrollTo(0, #{usernameElement.location.y})")
+      self.scroll_to(usernameElement)
 
-      #input and submit
-      usernameElement.click
-      usernameElement.send_keys(USERNAME)
-      passwordElement.click
-      passwordElement.send_keys(PASSWORD)
-
+      #input creds and submit
+      self.type(usernameElement, USERNAME)
+      self.type(passwordElement, PASSWORD)
       submitElement[1].click
 
-      self.wait_for_element(*SELECTORS[:forum_home])
+      #wait for login to complete, 10s timeout
+      self.wait_for_element(*SELECTORS[:forum_home], 10)
     end
 
-    #waits for a specified element on the page with optional timout override.
-    #Timeout defaults to 5 seconds
-    def self.wait_for_element(selectorType, selector, timeout=5)
-      wait = Selenium::WebDriver::Wait.new(:timeout => timeout)
-      wait.until {
-          element = @@browser.find_element(selectorType, selector)
-          if selector.include?('button')
-            element if element.enabled?
-          else
-            element if element.displayed?
+    #parse a list of `ScriptCategory` structs from the scripts page
+    def self.script_sections
+      results = []
+      categoryElements = @@browser.find_elements(*SELECTORS[:categories])
+      categoryElements.each do |categoryElement|
+        #add category to results
+        results << ScriptSection.new(
+          categoryElement.text,
+          categoryElement.attribute('href')
+        )
+      end
+      return results
+    end
+
+    #gets data about all scripts on the currently displayed page
+    def self.scripts
+      results = []
+
+      begin
+        #get script elements
+        scriptElements = @@browser.find_elements(*SELECTORS[:scripts])
+        scriptElements.each do |scriptElement|
+
+          #create initial record hash
+          record = {
+            name: nil,
+            author: nil,
+            url: nil,
+            addUrl: nil,
+            iconUrl: nil,
+            price: nil,
+            users: nil
+          }
+
+          #get basic elements
+          begin
+            nameElement = scriptElement.find_element(*SELECTORS[:script_title])
+            authorElement = scriptElement.find_element(*SELECTORS[:script_author])
+            addElement = scriptElement.find_element(*SELECTORS[:script_add_button])
+            infoElement = scriptElement.find_element(*SELECTORS[:script_info_button])
+
+            addUrl = addElement.attribute('onclick')
+            addUrl = addUrl.gsub('window.location=', '').gsub("'", '')
+            addUrl = URI.join(URLS[:home], addUrl).to_s
+
+            infoUrl = infoElement.attribute('onclick')
+            infoUrl = infoUrl.gsub('window.location=', '').gsub("'", '')
+
+            record[:name] = nameElement.text.strip
+            record[:author] = authorElement.text.gsub('Written by ', '').strip
+            record[:addUrl] = addUrl.strip
+            record[:url] = infoUrl.strip
+          rescue Selenium::WebDriver::Error::NoSuchElementError => e
+            # missing basic elements
+            p ">>Skipping script element: #{scriptElement.text}"
+            p ">>Because of error finding a shared element:"
+            p e
+
+            byebug
+            next
           end
+
+          #get image
+          begin
+            imgElement = scriptElement.find_element(*SELECTORS[:script_img])
+            iconUrl = imgElement.attribute('style')
+            iconUrl = iconUrl.gsub('background-image:', '')
+            iconUrl = iconUrl.gsub('url(', '').gsub(');', '').gsub('"', '')
+
+            record[:iconUrl] = iconUrl.strip
+          rescue Selenium::WebDriver::Error::NoSuchElementError
+            #no image
+            p ">>no image for script: #{record[:name]}"
+          end
+
+          #get users
+          begin
+            usersElement = scriptElement.find_element(*SELECTORS[:script_users])
+            userCount = usersElement.text.gsub('users', '')
+
+            record[:users] = userCount.strip
+          rescue Selenium::WebDriver::Error::NoSuchElementError
+            #no users
+          end
+
+          #get price
+          begin
+            price1 = nil
+            price2 = nil
+
+            priceBaseElement = scriptElement.find_element(*SELECTORS[:script_price_base])
+            price1 = priceBaseElement.text.strip
+
+            priceRenewElement = scriptElement.find_element(*SELECTORS[:script_price_renew])
+            price2 = priceRenewElement.text.strip
+
+            if price2 != ""
+              record[:price] = "#{price1} - #{price2}"
+            else
+              record[:price] = price1
+            end
+          rescue Selenium::WebDriver::Error::NoSuchElementError
+            #no prices, no problem
+            record[:price] = "Free"
+          end
+
+          #add record to results
+          p ">>Script found: #{record[:name]}"
+          results << record
+        end #end scriptElements.each
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        p ">>no scripts found on page: #{@@browser.current_url}"
+        #no scripts on page
+        return []
+      end #end main begin/rescue
+
+      #return all results
+      return results
+    end #end scripts()
+
+    def self.get_details
+      result = {
+        title: '',
+        description: '',
+        descriptionHtml: ''
       }
+
+      begin
+        titleElement = @@browser.find_element(*SELECTORS[:detail_title])
+        result[:title] = titleElement.text
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        p '> no name found, yikes'
+      end
+
+      begin
+        descriptionElement = @@browser.find_element(*SELECTORS[:detail_description])
+        result[:description] = descriptionElement.text
+        result[:descriptionHtml] = descriptionElement.attribute('outerHTML')
+      rescue Selenium::WebDriver::Error::NoSuchElementError
+        p '> no details found, uh-oh'
+      end
+
+      return result
     end
 
   end #end class OSBot
