@@ -15,6 +15,10 @@ namespace :osbot do
       p "new client: #{c.name}"
     end
     client.url = URLS[:home]
+    client.icon_url = URLS[:icon]
+    client.forum_url = URLS[:forum]
+    client.apidocs_url = URLS[:api]
+    client.download_url = URLS[:download]
     client.save
 
     #navigate to client home page and log in

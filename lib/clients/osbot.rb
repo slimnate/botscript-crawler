@@ -15,7 +15,11 @@ module Clients
     URLS = {
       home: 'https://www.osbot.org/',
       login: 'https://osbot.org/forum/login/',
-      scripts: 'https://osbot.org/mvc/sdn2/scripts/'
+      scripts: 'https://osbot.org/mvc/sdn2/scripts/',
+      icon: 'https://osbot.org/images/icon.png',
+      forum: 'https://osbot.org/forum',
+      api: 'https://osbot.org/api',
+      download: 'https://osbot.org/mvc/get',
     }
 
     #Hash with all selectors
