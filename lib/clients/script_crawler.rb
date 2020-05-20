@@ -17,8 +17,8 @@ class ScriptCrawler
   end
 
   #set the @@browser property for this crawler session and return the set browser
-  def self.use_browser(b)
-    @@browser = b
+  def self.use_browser(browser)
+    @@browser = browser
     return @@browser
   end
 

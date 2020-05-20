@@ -1,7 +1,7 @@
 node_modules/
 log/
 tmp/
-/public/packs
+/public/packs/js
 /public/packs-test
 /public/assets
 
