@@ -25,51 +25,6 @@ body p {
   margin: 20px;
 }
 
-
-/* ============================= navbar styles */
-.navbar {
-  padding: 0px !important;
-  margin: 0px;
-  width: 100%;
-  background-color: #444444;
-}
-
-.navbar ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: block;
-}
-
-.navbar ul li {
-  display: inline;
-  float: left;
-}
-
-.navbar ul li a {
-  display: inline-block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-.navbar a:hover {
-  background-color: #dddddd;
-  color: #333333;
-}
-
-.navbar ul li.nav-title {
-  background-color: #333333;
-  text-shadow: 2px 2px 3px #333;
-}
-
-.navbar ul li.nav-title a:hover {
-  text-shadow: 2px 2px 4px #333;
-}
-
-
 /* ============================= global table styles */
 tr td {
   font-size: 14px;
