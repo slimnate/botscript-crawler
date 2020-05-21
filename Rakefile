@@ -4,5 +4,6 @@
 require_relative 'config/application'
 require_relative 'lib/clients/script_crawler'
 require_relative 'lib/clients/osbot'
+require_relative 'lib/clients/powerbot'
 
 Rails.application.load_tasks

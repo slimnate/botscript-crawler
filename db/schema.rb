@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_20_014756) do
+ActiveRecord::Schema.define(version: 2020_05_20_072424) do
 
   create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -49,10 +49,10 @@ ActiveRecord::Schema.define(version: 2020_05_20_014756) do
   end
 
   create_table "scripts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
+    t.string "name", limit: 1000
     t.string "author"
     t.string "price"
-    t.string "url"
+    t.string "url", limit: 2500
     t.string "icon_url"
     t.text "description_text"
     t.text "description_html", size: :medium
