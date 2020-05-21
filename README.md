@@ -80,7 +80,9 @@ BotScript Crawler provides the following crawlers that gather script data for in
 `rake osbot:details` - Crawl each OSBot script page for detailed information about the script
 
 #### Powerbot
-TODO
+`rake powerbot:scripts` - Crawl OSBot site for list of scripts
+
+`rake powerbot:details` - Crawl each OSBot script page for detailed information about the script
 
 #### Tribot
 TODO
