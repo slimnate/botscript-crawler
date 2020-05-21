@@ -1,0 +1,78 @@
+// Place all the styles related to the Scripts controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+
+/* ============Script#index specific =========*/
+#accordion {
+  max-width: 100vw;
+}
+
+.row-client {
+  width: 50px;
+}
+
+.row-icon {
+  width:30px;
+}
+
+.row-name {
+  width: auto;
+}
+
+.row-price {
+  width: 50px;
+}
+
+.data-client {
+  font-size: 18px;
+}
+
+.data-name {
+  width: 50px;
+}
+
+.author {
+  font-size: 12px;
+}
+
+.description {
+  font-size: 12px;
+  margin-left: 20px;
+}
+
+/* ==================Script#show specific========= */
+.script-details {
+  padding-top: 20px;
+}
+
+.btn a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.btn a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.btn a:visited {
+  text-decoration: none;
+  color: inherit;
+}
+
+.description {
+  max-width: 100vw;
+  word-wrap: break-word;;
+  overflow-wrap: break-word;
+}
+
+.data-description {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.detail-description {
+
+}

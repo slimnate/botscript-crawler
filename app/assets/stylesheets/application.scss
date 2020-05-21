@@ -9,8 +9,10 @@
  * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
- *
+ *=require_tree
  */
+
+$icon-size: 25px;
 
 body {
   font-size: 14px;
@@ -32,8 +34,13 @@ tr td {
 }
 
 .icon {
-  width: 25px;
-  height: 25px;
+  width: $icon-size;
+  height: $icon-size;
+}
+
+.icon-lg {
+  width: $icon-size * 2;
+  height: $icon-size * 2;
 }
 
 .row-icon {
@@ -62,6 +69,23 @@ tr td {
 
 .timestamp {
   font-size: 10px;
+}
+
+.table .text {
+  position: relative;
+}
+
+.table .text span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: absolute;
+  width: 100%;
+}
+
+.text:before {
+  content: '';
+  display: inline-block;
 }
 
 .client-links a {

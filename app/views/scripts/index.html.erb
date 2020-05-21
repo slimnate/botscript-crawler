@@ -1,0 +1,69 @@
+<h2>Scripts (<%= @scripts.length %>)</h2>
+
+<p>Click client name or script name to view</p>
+
+<table class="table table-condensed">
+  <thead>
+    <tr>
+      <th class="row-icon"><!-- icon column --></th>
+      <th class="row-client">Client</th>
+      <th class="row-name">Name</th>
+      <th class="row-price">Price</th>
+      <th class="row-skill-categories">Skill/Categories</th>
+      <th class="row-created">Created</th>
+      <th class="row-updated">Updated</th>
+    </tr>
+  </thead>
+
+  <tbody id="accordion">
+    <% @scripts.each_with_index do |script, i| %>
+      <!-- collapse heading row -->
+      <tr id="heading-<%= i %>"
+        data-toggle="collapse"
+        data-target="#collapse-<%= i %>"
+        aria-expanded="false">
+        <% if script.icon_url.include? 'icon-script' %>
+          <!-- rsbot icons are css based -->
+          <td><div class="icon <%= script.icon_url %>"></div></td>
+        <% else %>
+          <td><img class="icon" src="<%= script.icon_url %>" alt="icon"></td>
+        <% end %>
+        <td class="data-client"><%= link_to script.client.name, script.client %></td>
+        <td class="data-name">
+          <span><%= link_to script.name, script %></span>
+          <br />
+          <span class="author text-muted">by <%= script.author %></span>
+        </td>
+        <% prices = split_price(script.price) %>
+        <td class="row-price">
+          <span class="<%= base_price_class prices[0] %>"><%= prices[0] %></span>
+          <br />
+          <span class="text-warning"><%= prices[1] %></span>
+        </td>
+        <td>
+          <% script.skills.each do |skill| %>
+            <span class="badge badge-primary"><%= skill.name %></span>
+          <% end %>
+          <% script.categories.each do |category| %>
+            <span class="badge badge-secondary"><%= category.name %></span>
+          <% end %>
+        </td>
+        <td><%= time_ago_in_words script.created_at %> ago</td>
+        <td><%= time_ago_in_words script.updated_at %> ago</td>
+      </tr>
+      <!-- collapse panel row -->
+      <tr id="collapse-<%= i %>"
+        class="collapse"
+        aria-labelledby="heading-<%= i %>"
+        data-parent="#accordion">
+        <td colspan="7">
+          <div class="description">
+            <span style="white-space: pre-line;">
+              <%= script.description_text unless script.description_text == nil %>
+            </span>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

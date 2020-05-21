@@ -1,0 +1,107 @@
+<div class="container script-details">
+  <h3>
+    <% if @script.icon_url.include? 'icon-script' %>
+      <!-- rsbot icons are css based -->
+      <span class="icon-lg <%= @script.icon_url %>"></span>
+    <% else %>
+      <img class="icon-lg" src="<%= @script.icon_url %>" alt="icon">
+    <% end %>
+    <%=  @script.name %> -
+    <span class="<%= base_price_class @script.price %>">
+      <%= @script.price %>
+    </span>
+  </h3>
+
+  <h5 class="text-muted"><%= @script.author %></h5>
+
+  <br />
+
+  <div class="row skills">
+    <div class="col-sm-3">
+      <h6>Skills</h6>
+    </div>
+    <div class="col-sm-9">
+      <div class="btn-group">
+        <% @script.skills.each do |skill| %>
+          <a class="btn btn-sm btn-success" href="/skills/<%= skill.id %>">
+            <%= skill.name %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row categories">
+    <div class="col-sm-3">
+      <h6>Categories:</h6>
+    </div>
+    <div class="col-sm-9">
+      <div class="btn-group">
+        <% @script.categories.each do |category| %>
+          <a class="btn btn-xs btn-primary" href="/categories/<%= category.id %>">
+            <%= category.name %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row script-links">
+    <div class="col-sm-3">
+      <h6>Links:</h6>
+    </div>
+    <div class="col-sm-9">
+      <div class="btn-group">
+        <a class="btn btn-sm btn-primary" href="<%= @script.url %>">Visit script page</a>
+        <a class="btn btn-sm btn-primary" href="<%= @script.download_url %>"">Download script</a>
+      </div>
+    </div>
+  </div>
+
+  <br/>
+  <br/>
+
+  <div class="row detail-description"  style="max-width: 800px;">
+    <ul class="nav nav-tabs" id="desc-tab" role="tablist">
+      <!-- tabs -->
+      <li class="nav-item">
+        <a id="text-tab"
+        href="#desc-text"
+        class="nav-link active"
+        id="text-tab"
+        data-toggle="#desc-text"
+        aria-controls="text"
+        aria-selected="true"
+        role="tab">
+          Plain Text
+        </a>
+      </li>
+      <li class="nav-item">
+        <a id="html-tab"
+        href="#desc-html"
+        class="nav-link active"
+        data-toggle="#desc-html"
+        aria-controls="html"
+        aria-selected="true"
+        role="tab">
+          HTML
+        </a>
+      </li>
+    </ul>
+
+    <!-- panels -->
+    <div class="tab-content" id="desc-tab-content">
+      <div class="tab-pane fade show active" id="desc-text" role="tabpanel" aria-labeld-by="text-tab">
+        <span style="white-space: pre-line;">
+          <%= @script.description_text unless @script.description_text == nil %>
+        </span>
+      </div>
+      <div class="tab-pane" id="desc-html" role="tabpanel" aria-labeld-by="html-tab">
+        <div style="max-width: 800px;">
+          test
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
